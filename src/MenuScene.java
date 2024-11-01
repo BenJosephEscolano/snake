@@ -1,0 +1,66 @@
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+public class MenuScene extends Scene{
+    public KL keyListener;
+    public ML mouseListener;
+    public BufferedImage title, play, playPressed, exit, exitPressed;
+    public Rect playRect, exitRect, titleRect;
+    public BufferedImage currPlayImage, currExitImage;
+
+    public MenuScene(KL keyListener, ML mouseListener){
+        this.keyListener = keyListener;
+        this.mouseListener = mouseListener;
+        try {
+            BufferedImage spriteSheet = ImageIO.read(new File("assets/menuSprite.png"));
+            title = spriteSheet.getSubimage(0, 242, 960, 240);
+            play = spriteSheet.getSubimage(0, 121,261,121);
+            playPressed = spriteSheet.getSubimage(264,121,261,121);
+            exit = spriteSheet.getSubimage(0,0,233,93);
+            exitPressed = spriteSheet.getSubimage(264,0,233,93);
+        } catch (Exception e){
+            System.out.println("Error: image");
+        }
+        titleRect = new Rect(240,100, 300, 100);
+        playRect = new Rect(310,280, 150, 70);
+        exitRect = new Rect(318,355, 130, 55);
+        currPlayImage = play;
+        currExitImage = exit;
+    }
+
+    @Override
+    public void update(double dt) {
+        if (mouseListener.getX() >= playRect.x && mouseListener.getX() <= playRect.x + playRect.width &&
+                mouseListener.getY() >= playRect.y && mouseListener.getY() <= playRect.y + playRect.height){
+            currPlayImage = playPressed;
+            if (mouseListener.isPressed()){
+                Window.getInstance().changeState(1);
+            }
+        } else {
+            currPlayImage = play;
+        }
+        if (mouseListener.getX() >= exitRect.x && mouseListener.getX() <= exitRect.x + exitRect.width &&
+                mouseListener.getY() >= exitRect.y && mouseListener.getY() <= exitRect.y + exitRect.height){
+            currExitImage = exitPressed;
+            if (mouseListener.isPressed()){
+                Window.getInstance().close();
+            }
+        } else {
+            currExitImage = exit;
+        }
+
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(new Color(107, 199, 218));
+        g.fillRect(0,0,Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+
+        g.drawImage(title, (int) titleRect.x,(int) titleRect.y, (int) titleRect.width, (int) titleRect.height,null);
+        g.drawImage(currPlayImage, (int) playRect.x,(int) playRect.y, (int) playRect.width, (int) playRect.height,null);
+        g.drawImage(currExitImage, (int) exitRect.x,(int) exitRect.y, (int) exitRect.width, (int) exitRect.height,null);
+    }
+}
